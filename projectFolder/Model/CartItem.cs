@@ -11,6 +11,13 @@ namespace petShop_courseWork.Model
         public ICartItem Item { get; set; }
         public double Quantity { get; set; } = 1;
 
+        public CartItem(ICartItem item, double quantity = 1)
+        {
+            Item = item;
+            Quantity = quantity;
+        }
+
+
         public decimal GetTotalPrice()
         {
             return Item.GetTotalPrice() * (decimal)Quantity;

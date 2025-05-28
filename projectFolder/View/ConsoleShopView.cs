@@ -1,0 +1,174 @@
+﻿using System;
+using System.Collections.Generic;
+using petShop_courseWork.Model;
+using petShop_courseWork.View;
+
+namespace petShop_courseWork.ConsoleApp
+{
+    public class ConsoleShopView : IShopView
+    {
+        private Customer _customer;
+
+        public ConsoleShopView(Customer customer)
+        {
+            _customer = customer;
+        }
+        public void DisplayCustomerInfo(Customer customer)
+        {
+            Console.WriteLine("===== Информация о покупателе =====");
+            Console.WriteLine($"Баланс кошелька: {customer.WalletBalance} руб.");
+            Console.WriteLine($"Бонусный баланс: {customer.BonusBalance} руб.");
+            Console.WriteLine($"Товаров в корзине: {customer.ShoppingCart.Count}");
+            Console.WriteLine("===================================\n");
+        }
+
+        public void ShowMainMenu()
+        {
+            Console.WriteLine("=== Главное меню ===");
+            Console.WriteLine("1. Просмотреть товары");
+            Console.WriteLine("2. Просмотреть услуги");
+            Console.WriteLine("3. Просмотреть корзину");
+            Console.WriteLine("4. Оплатить");
+            Console.WriteLine("0. Выйти");
+        }
+
+        public int GetMainMenuChoice()
+        {
+            Console.Write("Введите нужное действие (цифру): ");
+            return ReadInt();
+        }
+
+        public void DisplayProducts(List<Product> products)
+        {
+            Console.WriteLine("\n--- Список товаров ---");
+            for (int i = 0; i < products.Count; i++)
+            {
+                var p = products[i];
+                Console.WriteLine($"{i}. {p.Name} - {p.PricePerUnit} руб. {(p.RequiresWeighing ? "(по весу)" : "")}");
+            }
+        }
+
+        public void DisplayServices(List<Service> services)
+        {
+            Console.WriteLine("\n--- Список услуг ---");
+            for (int i = 0; i < services.Count; i++)
+            {
+                var s = services[i];
+                Console.WriteLine($"{i}. {s.Name} - {s.Price} руб.");
+            }
+        }
+
+        public int GetProductSelection(List<Product> products)
+        {
+            Console.Write("Введите номер товара (или -1 для отмены): ");
+            return ReadInt();
+        }
+
+        public int GetServiceSelection(List<Service> services)
+        {
+            Console.Write("Введите номер услуги (или -1 для отмены): ");
+            return ReadInt();
+        }
+
+        public void ShowCart(List<CartItem> cart)
+        {
+            Console.WriteLine("\n=== Корзина ===");
+            if (cart.Count == 0)
+            {
+                Console.WriteLine("Корзина пуста.");
+                return;
+            }
+
+            foreach (var item in cart)
+            {
+                Console.WriteLine(item.DisplayInfo());
+            }
+
+            Console.WriteLine($"Итог: {GetCartTotal(cart):F2} руб.\n");
+        }
+
+        public bool ConfirmPurchase()
+        {
+            Console.Write("Подтвердить покупку? (д/н): ");
+            string input = Console.ReadLine()?.ToLower();
+            return input == "д" || input == "y";
+        }
+
+        public int GetPaymentChoice()
+        {
+            Console.WriteLine("\nВыберите способ оплаты:");
+            Console.WriteLine("1. Наличные");
+            Console.WriteLine("2. Карта");
+            Console.WriteLine("3. Бонусы");
+            Console.Write("Ваш выбор: ");
+            return ReadInt();
+        }
+
+        public decimal GetPartialPaymentAmount()
+        {
+            Console.Write("Введите сумму оплаты: ");
+            return ReadDecimal();
+        }
+
+        public void ShowMessage(string message)
+        {
+            Console.WriteLine(message);
+        }
+
+        // Вспомогательные методы
+        private int ReadInt()
+        {
+            int result;
+            while (!int.TryParse(Console.ReadLine(), out result))
+                Console.Write("Неверный ввод. Повторите: ");
+            return result;
+        }
+
+        private decimal ReadDecimal()
+        {
+            decimal result;
+            while (!decimal.TryParse(Console.ReadLine(), out result))
+                Console.Write("Неверный ввод. Повторите: ");
+            return result;
+        }
+
+        private decimal GetCartTotal(List<CartItem> cart)
+        {
+            decimal total = 0;
+            foreach (var item in cart)
+                total += item.GetTotalPrice();
+            return total;
+        }
+
+        // Запрос баланса перед стартом
+        public void RequestInitialCustomer()
+        {
+            Console.Write("Введите имя клиента: ");
+            _customer.Name = Console.ReadLine() ?? string.Empty;
+
+            Console.Write("Введите баланс на кошельке: ");
+            decimal walletBalance;
+            while (!decimal.TryParse(Console.ReadLine(), out walletBalance))
+            {
+                Console.Write("Неверный ввод. Введите баланс на кошельке: ");
+            }
+            _customer.WalletBalance = walletBalance;
+
+            Console.Write("Введите баланс на карте: ");
+            decimal cardBalance;
+            while (!decimal.TryParse(Console.ReadLine(), out cardBalance))
+            {
+                Console.Write("Неверный ввод. Введите баланс на карте: ");
+            }
+            _customer.CardBalance = cardBalance;
+
+            Console.Write("Введите количество бонусов: ");
+            decimal bonusBalance;
+            while (!decimal.TryParse(Console.ReadLine(), out bonusBalance))
+            {
+                Console.Write("Неверный ввод. Введите количество бонусов: ");
+            }
+            _customer.BonusBalance = bonusBalance;
+        }
+    }
+}

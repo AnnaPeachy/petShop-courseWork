@@ -1,4 +1,5 @@
-﻿using System;
+﻿/*
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,3 +21,34 @@ namespace petShop_courseWork
         }
     }
 }
+*/
+
+using petShop_courseWork.View;
+using petShop_courseWork.Presenter;
+using petShop_courseWork.ConsoleApp;
+using petShop_courseWork.Model;
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        try
+        {
+            Customer customer = new Customer();
+            ConsoleShopView view = new ConsoleShopView(customer);
+            ShopPresenter presenter = new ShopPresenter(view, customer);
+
+            presenter.Start();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Ошибка: {ex.Message}");
+            Console.WriteLine("Подробности: " + ex.StackTrace);
+        }
+
+        Console.WriteLine("\nНажмите Enter для выхода...");
+        Console.ReadLine();
+    }
+}
+

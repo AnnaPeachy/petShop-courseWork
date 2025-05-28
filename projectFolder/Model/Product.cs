@@ -11,7 +11,7 @@ namespace petShop_courseWork.Model
         public string Name { get; set; }
         public decimal PricePerUnit { get; set; }
         public bool RequiresWeighing { get; set; }
-        public double? Weight { get; set; } // null, если не взвешен
+        public decimal? Weight { get; set; } // null, если не взвешен
         public string Category { get; set; }
 
         public decimal GetTotalPrice()

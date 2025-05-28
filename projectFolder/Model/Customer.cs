@@ -9,6 +9,8 @@ namespace petShop_courseWork.Model
     /// </summary>
     public class Customer
     {
+        public string Name { get; set; }
+
         /// <summary>
         /// Баланс наличных средств.
         /// </summary>

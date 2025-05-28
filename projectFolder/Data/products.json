@@ -1,0 +1,12 @@
+[
+  {
+    "Name": "Корм для собак",
+    "Price": 500.0,
+    "RequiresWeighing": false
+  },
+  {
+    "Name": "Корм для кроликов, весовой",
+    "Price": 300.0,
+    "RequiresWeighing": true
+  }
+]
