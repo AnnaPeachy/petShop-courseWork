@@ -1,12 +1,21 @@
 [
   {
     "Name": "Корм для собак",
-    "Price": 500.0,
-    "RequiresWeighing": false
+    "PricePerUnit": 500.0,
+    "RequiresWeighing": false,
+    "Category": "Корма"
   },
   {
     "Name": "Корм для кроликов, весовой",
-    "Price": 300.0,
-    "RequiresWeighing": true
+    "PricePerUnit": 300.0,
+    "RequiresWeighing": true,
+    "Category": "Корма"
+  },
+
+  {
+    "Name": "Лакомства для собак",
+    "PricePerUnit": 300.0,
+    "RequiresWeighing": true,
+    "Category": "Лакомства"
   }
 ]

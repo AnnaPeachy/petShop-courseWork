@@ -27,11 +27,11 @@ namespace petShop_courseWork.Presenter
 
         public void Start()
         {
-            bool running = true;
+            _view.RequestInitialCustomer(); // Запрос данных ОДИН РАЗ
 
+            bool running = true;
             while (running)
             {
-                _view.RequestInitialCustomer();
                 _view.DisplayCustomerInfo(_customer);
                 _view.ShowMainMenu();
                 int choice = _view.GetMainMenuChoice();
@@ -62,7 +62,13 @@ namespace petShop_courseWork.Presenter
 
         private void ShowAndSelectProduct()
         {
-            _view.DisplayProducts(_products);
+            if (_products.Count == 0)
+            {
+                _view.ShowMessage("Список товаров пуст.");
+                return;
+            }
+
+            _view.DisplayProducts(_products); // Показываем список
             int index = _view.GetProductSelection(_products);
 
             if (index >= 0 && index < _products.Count)
@@ -71,7 +77,7 @@ namespace petShop_courseWork.Presenter
 
                 if (selected.RequiresWeighing)
                 {
-                    decimal? weight = selected.Weight > 0 ? selected.Weight : 0.5m;
+                    decimal weight = _view.GetProductWeight(); // Запрашиваем вес
                     selected.Weight = weight;
                 }
 

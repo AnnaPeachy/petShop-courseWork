@@ -15,11 +15,13 @@ namespace petShop_courseWork.ConsoleApp
         }
         public void DisplayCustomerInfo(Customer customer)
         {
-            Console.WriteLine("===== Информация о покупателе =====");
-            Console.WriteLine($"Баланс кошелька: {customer.WalletBalance} руб.");
-            Console.WriteLine($"Бонусный баланс: {customer.BonusBalance} руб.");
+            Console.WriteLine("\n===== Информация о покупателе =====");
+            Console.WriteLine($"Имя: {customer.Name}");
+            Console.WriteLine($"Наличные: {customer.WalletBalance} руб.");
+            Console.WriteLine($"Карта: {customer.CardBalance} руб.");
+            Console.WriteLine($"Бонусы: {customer.BonusBalance} бонусов. (1 бонус = 1 рубль)");
             Console.WriteLine($"Товаров в корзине: {customer.ShoppingCart.Count}");
-            Console.WriteLine("===================================\n");
+            Console.WriteLine("===================================");
         }
 
         public void ShowMainMenu()
@@ -139,7 +141,11 @@ namespace petShop_courseWork.ConsoleApp
                 total += item.GetTotalPrice();
             return total;
         }
-
+        public decimal GetProductWeight()
+        {
+            Console.Write("Введите вес товара (кг): ");
+            return ReadDecimal();
+        }
         // Запрос баланса перед стартом
         public void RequestInitialCustomer()
         {

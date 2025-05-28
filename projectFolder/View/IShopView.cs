@@ -26,6 +26,8 @@ namespace petShop_courseWork.View
         void DisplayCustomerInfo(Customer customer);
         bool ConfirmPurchase();
 
+        decimal GetProductWeight();
+
         void RequestInitialCustomer();
     }
 }
