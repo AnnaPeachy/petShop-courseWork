@@ -56,7 +56,7 @@ namespace petShop_courseWork.ConsoleApp
             for (int i = 0; i < services.Count; i++)
             {
                 var s = services[i];
-                Console.WriteLine($"{i}. {s.Name} - {s.Price} руб.");
+                Console.WriteLine($"{i}. {s.Name} - {s.Price} руб. ({s.Description})");
             }
         }
 
