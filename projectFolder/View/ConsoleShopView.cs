@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using petShop_courseWork.Model;
+using petShop_courseWork.Model.Payment;
 using petShop_courseWork.View;
 
 namespace petShop_courseWork.ConsoleApp
@@ -93,7 +94,7 @@ namespace petShop_courseWork.ConsoleApp
         {
             Console.Write("Подтвердить покупку? (д/н): ");
             string input = Console.ReadLine()?.ToLower();
-            return input == "д" || input == "y";
+            return input == "д" || input == "н";
         }
 
         public int GetPaymentChoice()
@@ -110,6 +111,51 @@ namespace petShop_courseWork.ConsoleApp
         {
             Console.Write("Введите сумму оплаты: ");
             return ReadDecimal();
+        }
+
+        public decimal GetPaymentAmount(decimal remaining, IPaymentStrategy strategy, Customer customer)
+        {
+            decimal maxAvailable = 0;
+
+            if (strategy is CashPayment)
+                maxAvailable = customer.WalletBalance;
+            else if (strategy is CardPayment)
+                maxAvailable = customer.CardBalance;
+            else if (strategy is BonusPayment)
+                maxAvailable = customer.BonusBalance;
+
+            decimal maxAmount = Math.Min(remaining, maxAvailable);
+
+            Console.Write($"Введите сумму для оплаты {strategy.Name} (макс. {maxAmount} руб.): ");
+            decimal amount = ReadDecimal();
+
+            return Math.Min(amount, maxAmount);
+        }
+
+        public void DisplayPaymentOptions(Customer customer)
+        {
+            Console.WriteLine("\nДоступные средства:");
+            Console.WriteLine($"1. Наличные: {customer.WalletBalance} руб.");
+            Console.WriteLine($"2. Карта: {customer.CardBalance} руб.");
+            Console.WriteLine($"3. Бонусы: {customer.BonusBalance} руб.");
+        }
+
+        public int GetItemToRemove(List<CartItem> cart)
+        {
+            Console.WriteLine("\nВведите номер товара для удаления:");
+            for (int i = 0; i < cart.Count; i++)
+            {
+                Console.WriteLine($"{i}. {cart[i].Item.Name} - {cart[i].GetTotalPrice()} руб.");
+            }
+            Console.Write("Ваш выбор (или -1 для отмены): ");
+            return ReadInt();
+        }
+
+        public decimal GetPartialPaymentAmount(decimal maxAmount)
+        {
+            Console.Write($"Введите сумму оплаты (макс. {maxAmount} руб.): ");
+            decimal amount = ReadDecimal();
+            return Math.Min(amount, maxAmount);
         }
 
         public void ShowMessage(string message)

@@ -4,6 +4,7 @@ using petShop_courseWork.Model;
 using petShop_courseWork.Model.Payment;
 using petShop_courseWork.View;
 using petShop_courseWork.Services;
+using System.Linq;
 
 namespace petShop_courseWork.Presenter
 {
@@ -101,37 +102,62 @@ namespace petShop_courseWork.Presenter
 
         private void ProcessPayment()
         {
-            decimal total;
-            try
+            if (_customer.ShoppingCart.Count == 0)
             {
-                total = _customer.GetCartTotal(); // Место, где может возникнуть исключение
-            }
-            catch (InvalidOperationException ex)
-            {
-                _view.ShowMessage($"Ошибка при расчёте итоговой суммы: {ex.Message}");
+                _view.ShowMessage("Корзина пуста. Нечего оплачивать.");
                 return;
             }
 
-            _view.ShowMessage($"Итоговая сумма к оплате: {total} руб.");
+            // Проверяем взвешенность товаров перед оплатой
+            CheckProductWeights();
 
-            if (!_view.ConfirmPurchase())
+            decimal total = _customer.GetCartTotal();
+            decimal availableMoney = _customer.WalletBalance + _customer.CardBalance + _customer.BonusBalance;
+
+            // Пока сумма в корзине больше доступных средств, предлагаем убрать товары
+            while (total > availableMoney && _customer.ShoppingCart.Count > 0)
+            {
+                _view.ShowMessage($"\nНедостаточно средств! Нужно ещё {total - availableMoney} руб.");
+                _view.ShowMessage("Доступные средства:");
+                _view.ShowMessage($"- Наличные: {_customer.WalletBalance} руб.");
+                _view.ShowMessage($"- Карта: {_customer.CardBalance} руб.");
+                _view.ShowMessage($"- Бонусы: {_customer.BonusBalance} руб.");
+
+                _view.ShowCart(_customer.ShoppingCart);
+                int index = _view.GetItemToRemove(_customer.ShoppingCart);
+
+                if (index >= 0 && index < _customer.ShoppingCart.Count)
+                {
+                    var removedItem = _customer.ShoppingCart[index];
+                    _customer.ShoppingCart.RemoveAt(index);
+                    total = _customer.GetCartTotal();
+                    _view.ShowMessage($"Товар '{removedItem.Item.Name}' удалён из корзины. Новый итог: {total} руб.");
+                }
+                else
+                {
+                    _view.ShowMessage("Операция отменена.");
+                    return;
+                }
+            }
+
+            // Если после удаления товаров корзина пуста
+            if (_customer.ShoppingCart.Count == 0)
+            {
+                _view.ShowMessage("В корзине не осталось товаров.");
                 return;
+            }
 
+            // Основной процесс оплаты
             decimal remaining = total;
+            _view.ShowMessage($"\n=== ОПЛАТА ===\nОбщая сумма: {total} руб.");
 
             while (remaining > 0)
             {
-                _view.ShowMessage($"Осталось оплатить: {remaining} руб.");
+                _view.ShowMessage($"\nОсталось оплатить: {remaining} руб.");
+                _view.DisplayPaymentOptions(_customer);
+
                 int method = _view.GetPaymentChoice();
-
-                IPaymentStrategy strategy = null;
-
-                if (method == 1)
-                    strategy = new CashPayment();
-                else if (method == 2)
-                    strategy = new CardPayment();
-                else if (method == 3)
-                    strategy = new BonusPayment();
+                IPaymentStrategy strategy = GetPaymentStrategy(method);
 
                 if (strategy == null)
                 {
@@ -139,22 +165,44 @@ namespace petShop_courseWork.Presenter
                     continue;
                 }
 
-                decimal amount = method == 1 ? remaining : _view.GetPartialPaymentAmount();
+                decimal amount = _view.GetPaymentAmount(remaining, strategy, _customer);
 
                 if (strategy.CanPay(amount, _customer))
                 {
                     remaining -= amount;
-                    _view.ShowMessage($"Оплачено {amount} руб. способом {strategy.Name}.");
+                    _view.ShowMessage($"Оплачено {amount} руб. ({strategy.Name})");
                 }
                 else
                 {
-                    _view.ShowMessage("Недостаточно средств для оплаты этой части.");
+                    _view.ShowMessage($"Недостаточно средств на {strategy.Name}!");
                 }
             }
 
-            _view.ShowMessage("Оплата прошла успешно. Спасибо за покупку!");
+            _view.ShowMessage("\nОплата прошла успешно! Спасибо за покупку!");
             _customer.ShoppingCart.Clear();
         }
 
+        private void CheckProductWeights()
+        {
+            foreach (var item in _customer.ShoppingCart)
+            {
+                if (item.Item is Product product && product.RequiresWeighing && product.Weight == null)
+                {
+                    _view.ShowMessage($"Требуется взвешивание товара: {product.Name}");
+                    product.Weight = _view.GetProductWeight();
+                }
+            }
+        }
+
+        private IPaymentStrategy GetPaymentStrategy(int method)
+        {
+            switch (method)
+            {
+                case 1: return new CashPayment();
+                case 2: return new CardPayment();
+                case 3: return new BonusPayment();
+                default: return null;
+            }
+        }
     }
 }

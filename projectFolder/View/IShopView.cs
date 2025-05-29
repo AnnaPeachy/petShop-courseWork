@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using petShop_courseWork.Model;
+using petShop_courseWork.Model.Payment;
 
 namespace petShop_courseWork.View
 {
@@ -29,5 +30,11 @@ namespace petShop_courseWork.View
         decimal GetProductWeight();
 
         void RequestInitialCustomer();
+
+        void DisplayPaymentOptions(Customer customer);
+        int GetItemToRemove(List<CartItem> cart);
+        decimal GetPartialPaymentAmount(decimal maxAmount);
+
+        decimal GetPaymentAmount(decimal remaining, IPaymentStrategy strategy, Customer customer);
     }
 }
