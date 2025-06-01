@@ -8,15 +8,16 @@ namespace petShop_courseWork.Model
 {
     public class CartItem
     {
-        public ICartItem Item { get; set; }
+        public ShopItem Item { get; set; }
         public double Quantity { get; set; } = 1;
 
-        public CartItem(ICartItem item, double quantity = 1)
+        public CartItem() { }
+
+        public CartItem(ShopItem item, double quantity = 1)
         {
             Item = item;
             Quantity = quantity;
         }
-
 
         public decimal GetTotalPrice()
         {
@@ -28,5 +29,6 @@ namespace petShop_courseWork.Model
             return $"{Item.Name} x{Quantity} = {GetTotalPrice():C}";
         }
     }
+
 
 }

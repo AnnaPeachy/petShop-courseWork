@@ -2,12 +2,45 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using petShop_courseWork.Model;
+
 
 namespace petShop_courseWork.Services
 {
     public class ProductLoader
     {
+        private const string SessionFile = "Data/session.json";
+
+        // Сохраняем текущее состояние
+        public static void SaveSession(SessionData data)
+        {
+            Directory.CreateDirectory("Data");
+
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true
+            };
+            options.Converters.Add(new ShopItemJsonConverter());
+
+            string json = JsonSerializer.Serialize(data, options);
+            File.WriteAllText(SessionFile, json);
+        }
+
+
+        // Загружаем сохранённое состояние
+        public static SessionData LoadSession()
+        {
+            if (!File.Exists(SessionFile))
+                return null;
+
+            var options = new JsonSerializerOptions();
+            options.Converters.Add(new ShopItemJsonConverter());
+
+            string json = File.ReadAllText(SessionFile);
+            return JsonSerializer.Deserialize<SessionData>(json, options);
+        }
+
         public static List<Product> LoadProducts(string path)
         {
             try

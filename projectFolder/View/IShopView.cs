@@ -21,6 +21,8 @@ namespace petShop_courseWork.View
         void ShowCart(List<CartItem> cartItems);
         void ShowMessage(string message);
 
+        bool ConfirmExit();
+
         int GetPaymentChoice();
         decimal GetPartialPaymentAmount();
 

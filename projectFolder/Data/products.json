@@ -17,5 +17,17 @@
     "PricePerUnit": 300.0,
     "RequiresWeighing": true,
     "Category": "Лакомства"
+  },
+  {
+    "Name": "Сухой корм для кошек",
+    "PricePerUnit": 550.0,
+    "RequiresWeighing": false,
+    "Category": "Корм"
+  },
+  {
+    "Name": "Намордник",
+    "PricePerUnit": 120.0,
+    "RequiresWeighing": false,
+    "Category": "Аксессуары"
   }
 ]

@@ -26,15 +26,11 @@ namespace petShop_courseWork.Model
         /// </summary>
         public decimal BonusBalance { get; set; }
 
-        private List<CartItem> _shoppingCart = new List<CartItem>();
-
         /// <summary>
         /// Список товаров в корзине.
         /// </summary>
-        public List<CartItem> ShoppingCart
-        {
-            get { return _shoppingCart; }
-        }
+        public List<CartItem> ShoppingCart { get; set; } = new List<CartItem>();
+
 
         /// <summary>
         /// Подсчёт общей суммы корзины.

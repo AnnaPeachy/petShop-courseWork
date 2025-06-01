@@ -6,15 +6,14 @@ using System.Threading.Tasks;
 
 namespace petShop_courseWork.Model
 {
-    public class Product : ICartItem
+    public class Product : ShopItem
     {
-        public string Name { get; set; }
         public decimal PricePerUnit { get; set; }
         public bool RequiresWeighing { get; set; }
         public decimal? Weight { get; set; } // null, если не взвешен
         public string Category { get; set; }
 
-        public decimal GetTotalPrice()
+        public override decimal GetTotalPrice()
         {
             if (RequiresWeighing)
             {
@@ -22,11 +21,9 @@ namespace petShop_courseWork.Model
                     throw new InvalidOperationException("Товар требует взвешивания.");
                 return PricePerUnit * (decimal)Weight;
             }
-            else
-            {
-                return PricePerUnit;
-            }
+            return PricePerUnit;
         }
     }
+
 
 }

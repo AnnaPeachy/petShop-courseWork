@@ -41,13 +41,21 @@ namespace petShop_courseWork.ConsoleApp
             return ReadInt();
         }
 
+        public bool ConfirmExit()
+        {
+            Console.Write("\nСохранить данные перед выходом? (д/н): ");
+            string input = Console.ReadLine()?.ToLower();
+            return input == "д" || input == "y"; // только "да" — true
+        }
+
+
         public void DisplayProducts(List<Product> products)
         {
             Console.WriteLine("\n--- Список товаров ---");
             for (int i = 0; i < products.Count; i++)
             {
                 var p = products[i];
-                Console.WriteLine($"{i}. {p.Name} - {p.PricePerUnit} руб. {(p.RequiresWeighing ? "(по весу)" : "")}");
+                Console.WriteLine($"{i}. ({p.Category}) {p.Name} - {p.PricePerUnit} руб. {(p.RequiresWeighing ? "(по весу)" : "")}");
             }
         }
 
@@ -94,7 +102,7 @@ namespace petShop_courseWork.ConsoleApp
         {
             Console.Write("Подтвердить покупку? (д/н): ");
             string input = Console.ReadLine()?.ToLower();
-            return input == "д" || input == "н";
+            return input == "д" || input == "y";
         }
 
         public int GetPaymentChoice()

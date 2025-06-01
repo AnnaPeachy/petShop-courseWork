@@ -5,6 +5,7 @@ using petShop_courseWork.Model.Payment;
 using petShop_courseWork.View;
 using petShop_courseWork.Services;
 using System.Linq;
+using System.IO;
 
 namespace petShop_courseWork.Presenter
 {
@@ -12,23 +13,69 @@ namespace petShop_courseWork.Presenter
     {
         private readonly IShopView _view;
         private readonly Customer _customer;
-        private readonly List<Product> _products;
-        private readonly List<Service> _services;
+        private List<Product> _products;
+        private List<Service> _services;
 
         public ShopPresenter(IShopView view, Customer customer)
         {
             _view = view;
             _customer = customer;
 
-
-            // путь к файлам
-            _products = ProductLoader.LoadProducts("Data/products.json");
-            _services = ProductLoader.LoadServices("Data/services.json");
+            // Загрузка данных (сначала пробуем из сессии)
+            LoadSessionData();
         }
+
+        private void LoadSessionData()
+        {
+            var session = ProductLoader.LoadSession();
+
+            if (session != null)
+            {
+                // Подгружаем сохранённые данные
+                _products = session.Products ?? ProductLoader.LoadProducts("Data/products.json");
+                _services = session.Services ?? ProductLoader.LoadServices("Data/services.json");
+
+                // Копируем сохранённые данные покупателя
+                _customer.Name = session.Customer.Name;
+                _customer.WalletBalance = session.Customer.WalletBalance;
+                _customer.CardBalance = session.Customer.CardBalance;
+                _customer.BonusBalance = session.Customer.BonusBalance;
+
+                // Восстанавливаем корзину
+                _customer.ShoppingCart.Clear();
+                foreach (var item in session.Customer.ShoppingCart)
+                {
+                    _customer.ShoppingCart.Add(item);
+                }
+
+                _view.ShowMessage("\nЗагружена предыдущая сессия.");
+                _view.DisplayCustomerInfo(_customer);
+            }
+            else
+            {
+                // Обычная загрузка если нет сессии
+                _products = ProductLoader.LoadProducts("Data/products.json");
+                _services = ProductLoader.LoadServices("Data/services.json");
+                _view.RequestInitialCustomer(); // Запрашиваем данные только при новом сеансе
+            }
+        }
+
+        // Добавляем метод для сохранения перед выходом
+        public void SaveBeforeExit()
+        {
+            var session = new SessionData
+            {
+                Customer = _customer,
+                Products = _products,
+                Services = _services
+            };
+            ProductLoader.SaveSession(session);
+        }
+    
 
         public void Start()
         {
-            _view.RequestInitialCustomer(); // Запрос данных ОДИН РАЗ
+            //_view.RequestInitialCustomer(); // Запрос данных ОДИН РАЗ
 
             bool running = true;
             while (running)
@@ -52,8 +99,30 @@ namespace petShop_courseWork.Presenter
                         ProcessPayment();
                         break;
                     case 0:
+                        if (_view.ConfirmExit())
+                        {
+                            SaveBeforeExit();
+                        }
+                        else
+                        {
+                            // Удаляем файл сессии, если он существует
+                            string sessionPath = "Data/session.json";
+                            if (System.IO.File.Exists(sessionPath))
+                            {
+                                try
+                                {
+                                    System.IO.File.Delete(sessionPath);
+                                    _view.ShowMessage("Сессия удалена.");
+                                }
+                                catch (Exception ex)
+                                {
+                                    _view.ShowMessage($"Не удалось удалить сессию: {ex.Message}");
+                                }
+                            }
+                        }
                         running = false;
                         break;
+
                     default:
                         _view.ShowMessage("Неверный выбор.");
                         break;
@@ -180,6 +249,10 @@ namespace petShop_courseWork.Presenter
 
             _view.ShowMessage("\nОплата прошла успешно! Спасибо за покупку!");
             _customer.ShoppingCart.Clear();
+            if (File.Exists("Data/session.json"))
+            {
+                File.Delete("Data/session.json");
+            }
         }
 
         private void CheckProductWeights()

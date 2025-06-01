@@ -39,6 +39,11 @@ class Program
             ConsoleShopView view = new ConsoleShopView(customer);
             ShopPresenter presenter = new ShopPresenter(view, customer);
 
+            // Обработка закрытия приложения
+            //AppDomain.CurrentDomain.ProcessExit += (s, e) => presenter.SaveBeforeExit();
+            //Console.CancelKeyPress += (s, e) => presenter.SaveBeforeExit();
+
+
             presenter.Start();
         }
         catch (Exception ex)
@@ -46,7 +51,7 @@ class Program
             Console.WriteLine($"Ошибка: {ex.Message}");
             Console.WriteLine("Подробности: " + ex.StackTrace);
         }
-
+        
         Console.WriteLine("\nНажмите Enter для выхода...");
         Console.ReadLine();
     }

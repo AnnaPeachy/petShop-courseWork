@@ -6,16 +6,16 @@ using System.Threading.Tasks;
 
 namespace petShop_courseWork.Model
 {
-    public class Service : ICartItem
+    public class Service : ShopItem
     {
-        public string Name { get; set; }
         public decimal Price { get; set; }
         public string Description { get; set; }
 
-        public decimal GetTotalPrice()
+        public override decimal GetTotalPrice()
         {
             return Price;
         }
     }
+
 
 }

@@ -95,6 +95,9 @@
     <Compile Include="Model\Payment\IPaymentStrategy.cs" />
     <Compile Include="Model\Product.cs" />
     <Compile Include="Model\Services\ProductLoader.cs" />
+    <Compile Include="Model\SessionData.cs" />
+    <Compile Include="Model\ShopItem.cs" />
+    <Compile Include="Model\ShopItemJsonConverter.cs" />
     <Compile Include="Presenter\ShopPresenter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
