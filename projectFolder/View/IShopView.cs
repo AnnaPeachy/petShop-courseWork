@@ -26,6 +26,9 @@ namespace petShop_courseWork.View
         int GetPaymentChoice();
         decimal GetPartialPaymentAmount();
 
+        int GetTopUpMethod(); // только для пополнения; 1 - наличные, 2 - карта
+
+
         void DisplayCustomerInfo(Customer customer);
         bool ConfirmPurchase();
 

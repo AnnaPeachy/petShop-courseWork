@@ -6,6 +6,7 @@ using petShop_courseWork.View;
 using petShop_courseWork.Services;
 using System.Linq;
 using System.IO;
+using petShop_courseWork.Commands;
 
 namespace petShop_courseWork.Presenter
 {
@@ -97,6 +98,9 @@ namespace petShop_courseWork.Presenter
                         break;
                     case 4:
                         ProcessPayment();
+                        break;
+                    case 5:
+                        HandleBalanceTopUp();
                         break;
                     case 0:
                         if (_view.ConfirmExit())
@@ -246,9 +250,10 @@ namespace petShop_courseWork.Presenter
                     _view.ShowMessage($"Недостаточно средств на {strategy.Name}!");
                 }
             }
+            // успешная покупка
+            var command = new MakePurchaseCommand(_customer, _view);
+            command.Execute();
 
-            _view.ShowMessage("\nОплата прошла успешно! Спасибо за покупку!");
-            _customer.ShoppingCart.Clear();
             if (File.Exists("Data/session.json"))
             {
                 File.Delete("Data/session.json");
@@ -266,6 +271,36 @@ namespace petShop_courseWork.Presenter
                 }
             }
         }
+
+        private void HandleBalanceTopUp()
+        {
+            _view.ShowMessage("\n=== Пополнение баланса ===");
+
+            int method = _view.GetTopUpMethod();
+            decimal amount = _view.GetPartialPaymentAmount();
+
+            if (amount <= 0)
+            {
+                _view.ShowMessage("Сумма должна быть больше нуля.");
+                return;
+            }
+
+            if (method == 1)
+            {
+                _customer.WalletBalance += amount;
+                _view.ShowMessage($"Наличные пополнены на {amount} руб.");
+            }
+            else if (method == 2)
+            {
+                _customer.CardBalance += amount;
+                _view.ShowMessage($"Баланс карты пополнен на {amount} руб.");
+            }
+            else
+            {
+                _view.ShowMessage("Неверный способ пополнения.");
+            }
+        }
+
 
         private IPaymentStrategy GetPaymentStrategy(int method)
         {

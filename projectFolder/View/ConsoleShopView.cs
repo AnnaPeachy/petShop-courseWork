@@ -32,6 +32,7 @@ namespace petShop_courseWork.ConsoleApp
             Console.WriteLine("2. Просмотреть услуги");
             Console.WriteLine("3. Просмотреть корзину");
             Console.WriteLine("4. Оплатить");
+            Console.WriteLine("5. Пополнить баланс");
             Console.WriteLine("0. Выйти");
         }
 
@@ -146,6 +147,15 @@ namespace petShop_courseWork.ConsoleApp
             Console.WriteLine($"1. Наличные: {customer.WalletBalance} руб.");
             Console.WriteLine($"2. Карта: {customer.CardBalance} руб.");
             Console.WriteLine($"3. Бонусы: {customer.BonusBalance} руб.");
+        }
+
+        public int GetTopUpMethod()
+        {
+            Console.WriteLine("\nВыберите способ пополнения:");
+            Console.WriteLine("1. Наличные");
+            Console.WriteLine("2. Банковская карта");
+            Console.Write("Ваш выбор: ");
+            return ReadInt();
         }
 
         public int GetItemToRemove(List<CartItem> cart)
