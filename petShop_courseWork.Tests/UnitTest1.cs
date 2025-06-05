@@ -80,4 +80,31 @@ namespace petShop_courseWork.Tests
             Assert.AreEqual(40, customer.BonusBalance);
         }
     }
+
+    /// <summary>
+    /// Тестирует оплату с карты при недостаточном балансе.
+    /// </summary>
+    [TestClass]
+    public class CardPaymentTests
+    {
+        [TestMethod]
+        public void CanPay_CardPayment_NotEnoughFunds_ReturnsFalse()
+        {
+            // Arrange — создаём клиента с балансом карты 100
+            var customer = new Customer
+            {
+                CardBalance = 100
+            };
+
+            var payment = new CardPayment();
+
+            // Act — пытаемся оплатить 150
+            bool result = payment.CanPay(150, customer);
+
+            // Assert — проверяем, что оплата невозможна и баланс не изменился
+            Assert.IsFalse(result);
+            Assert.AreEqual(100, customer.CardBalance);
+        }
+    }
+
 }
