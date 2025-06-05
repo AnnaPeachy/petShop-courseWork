@@ -6,14 +6,19 @@ using petShop_courseWork.View;
 
 namespace petShop_courseWork.ConsoleApp
 {
+    /// <summary>
+    /// Консольное представление магазина - реализация интерфейса IShopView
+    /// </summary>
     public class ConsoleShopView : IShopView
     {
-        private Customer _customer;
+        private Customer _customer; // Текущий покупатель
 
         public ConsoleShopView(Customer customer)
         {
-            _customer = customer;
+            _customer = customer; // Инициализация покупателя
         }
+
+        // Отображение информации о покупателе
         public void DisplayCustomerInfo(Customer customer)
         {
             Console.WriteLine("\n===== Информация о покупателе =====");
@@ -25,6 +30,7 @@ namespace petShop_courseWork.ConsoleApp
             Console.WriteLine("===================================");
         }
 
+        // Отображение главного меню
         public void ShowMainMenu()
         {
             Console.WriteLine("=== Главное меню ===");
@@ -36,20 +42,22 @@ namespace petShop_courseWork.ConsoleApp
             Console.WriteLine("0. Выйти");
         }
 
+        // Получение выбора из главного меню
         public int GetMainMenuChoice()
         {
             Console.Write("Введите нужное действие (цифру): ");
-            return ReadInt();
+            return ReadInt(); // Использование вспомогательного метода
         }
 
+        // Подтверждение выхода с сохранением
         public bool ConfirmExit()
         {
             Console.Write("\nСохранить данные перед выходом? (д/н): ");
             string input = Console.ReadLine()?.ToLower();
-            return input == "д" || input == "y"; // только "да" — true
+            return input == "д" || input == "l"; // только "да" — true
         }
 
-
+        // Отображение списка товаров
         public void DisplayProducts(List<Product> products)
         {
             Console.WriteLine("\n--- Список товаров ---");
@@ -60,6 +68,7 @@ namespace petShop_courseWork.ConsoleApp
             }
         }
 
+        // Отображение списка услуг
         public void DisplayServices(List<Service> services)
         {
             Console.WriteLine("\n--- Список услуг ---");
@@ -70,18 +79,21 @@ namespace petShop_courseWork.ConsoleApp
             }
         }
 
+        // Выбор товара из списка
         public int GetProductSelection(List<Product> products)
         {
             Console.Write("Введите номер товара (или -1 для отмены): ");
             return ReadInt();
         }
 
+        // Выбор услуги из списка
         public int GetServiceSelection(List<Service> services)
         {
             Console.Write("Введите номер услуги (или -1 для отмены): ");
             return ReadInt();
         }
 
+        // Отображение содержимого корзины
         public void ShowCart(List<CartItem> cart)
         {
             Console.WriteLine("\n=== Корзина ===");
@@ -95,17 +107,24 @@ namespace petShop_courseWork.ConsoleApp
             {
                 Console.WriteLine(item.DisplayInfo());
             }
-
-            Console.WriteLine($"Итог: {GetCartTotal(cart):F2} руб.\n");
         }
 
+        // Получение выбора в меню корзины
+        public int GetCartMenuChoice()
+        {
+            Console.Write("Введите ваш выбор: ");
+            return ReadInt();
+        }
+
+        // Подтверждение покупки
         public bool ConfirmPurchase()
         {
             Console.Write("Подтвердить покупку? (д/н): ");
             string input = Console.ReadLine()?.ToLower();
-            return input == "д" || input == "y";
+            return input == "д" || input == "l";
         }
 
+        // Выбор способа оплаты
         public int GetPaymentChoice()
         {
             Console.WriteLine("\nВыберите способ оплаты:");
@@ -116,16 +135,19 @@ namespace petShop_courseWork.ConsoleApp
             return ReadInt();
         }
 
+        // Получение суммы частичной оплаты
         public decimal GetPartialPaymentAmount()
         {
             Console.Write("Введите сумму оплаты: ");
             return ReadDecimal();
         }
 
+        // Получение суммы оплаты с учетом доступных средств
         public decimal GetPaymentAmount(decimal remaining, IPaymentStrategy strategy, Customer customer)
         {
             decimal maxAvailable = 0;
 
+            // Определение максимально доступной суммы для выбранного способа оплаты
             if (strategy is CashPayment)
                 maxAvailable = customer.WalletBalance;
             else if (strategy is CardPayment)
@@ -138,9 +160,10 @@ namespace petShop_courseWork.ConsoleApp
             Console.Write($"Введите сумму для оплаты {strategy.Name} (макс. {maxAmount} руб.): ");
             decimal amount = ReadDecimal();
 
-            return Math.Min(amount, maxAmount);
+            return Math.Min(amount, maxAmount); // Гарантируем, что не превысим доступные средства
         }
 
+        // Отображение доступных способов оплаты
         public void DisplayPaymentOptions(Customer customer)
         {
             Console.WriteLine("\nДоступные средства:");
@@ -149,6 +172,7 @@ namespace petShop_courseWork.ConsoleApp
             Console.WriteLine($"3. Бонусы: {customer.BonusBalance} руб.");
         }
 
+        // Выбор способа пополнения баланса
         public int GetTopUpMethod()
         {
             Console.WriteLine("\nВыберите способ пополнения:");
@@ -158,6 +182,7 @@ namespace petShop_courseWork.ConsoleApp
             return ReadInt();
         }
 
+        // Выбор товара для удаления из корзины
         public int GetItemToRemove(List<CartItem> cart)
         {
             Console.WriteLine("\nВведите номер товара для удаления:");
@@ -169,6 +194,7 @@ namespace petShop_courseWork.ConsoleApp
             return ReadInt();
         }
 
+        // Получение суммы частичной оплаты с ограничением
         public decimal GetPartialPaymentAmount(decimal maxAmount)
         {
             Console.Write($"Введите сумму оплаты (макс. {maxAmount} руб.): ");
@@ -176,12 +202,13 @@ namespace petShop_courseWork.ConsoleApp
             return Math.Min(amount, maxAmount);
         }
 
+        // Вывод сообщения
         public void ShowMessage(string message)
         {
             Console.WriteLine(message);
         }
 
-        // Вспомогательные методы
+        // Вспомогательные методы для ввода данных
         private int ReadInt()
         {
             int result;
@@ -198,19 +225,14 @@ namespace petShop_courseWork.ConsoleApp
             return result;
         }
 
-        private decimal GetCartTotal(List<CartItem> cart)
-        {
-            decimal total = 0;
-            foreach (var item in cart)
-                total += item.GetTotalPrice();
-            return total;
-        }
+        // Получение веса товара
         public decimal GetProductWeight()
         {
             Console.Write("Введите вес товара (кг): ");
             return ReadDecimal();
         }
-        // Запрос баланса перед стартом
+
+        // Инициализация данных нового покупателя
         public void RequestInitialCustomer()
         {
             Console.Write("Введите имя клиента: ");

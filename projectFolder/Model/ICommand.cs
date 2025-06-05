@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace petShop_courseWork.Commands
 {
+    // Интерфейс команды для реализации паттерна "Команда"
     public interface ICommand
     {
         void Execute();

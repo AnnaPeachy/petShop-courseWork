@@ -11,6 +11,7 @@ namespace petShop_courseWork.Model.Payment
     {
         public string Name => "Бонусы";
 
+        // Проверка, достаточно ли бонусов для оплаты
         public bool CanPay(decimal amount, Customer customer)
         {
             if (customer.BonusBalance >= amount)

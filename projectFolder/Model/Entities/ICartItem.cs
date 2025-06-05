@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace petShop_courseWork.Model
 {
+    // Интерфейс для единицы корзины — может быть товаром или услугой
     public interface ICartItem
     {
         string Name { get; }

@@ -19,21 +19,19 @@ namespace petShop_courseWork.View
         int GetServiceSelection(List<Service> services);
 
         void ShowCart(List<CartItem> cartItems);
+        int GetCartMenuChoice();
         void ShowMessage(string message);
 
         bool ConfirmExit();
 
         int GetPaymentChoice();
         decimal GetPartialPaymentAmount();
-
         int GetTopUpMethod(); // только для пополнения; 1 - наличные, 2 - карта
-
 
         void DisplayCustomerInfo(Customer customer);
         bool ConfirmPurchase();
 
         decimal GetProductWeight();
-
         void RequestInitialCustomer();
 
         void DisplayPaymentOptions(Customer customer);

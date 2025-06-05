@@ -12,7 +12,7 @@ namespace petShop_courseWork.Services
     {
         private const string SessionFile = "Data/session.json";
 
-        // Сохраняем текущее состояние
+        // Сохраняем текущее состояние в файл
         public static void SaveSession(SessionData data)
         {
             Directory.CreateDirectory("Data");
@@ -27,8 +27,7 @@ namespace petShop_courseWork.Services
             File.WriteAllText(SessionFile, json);
         }
 
-
-        // Загружаем сохранённое состояние
+        // Загружаем сохранённую сессию
         public static SessionData LoadSession()
         {
             if (!File.Exists(SessionFile))
@@ -41,6 +40,7 @@ namespace petShop_courseWork.Services
             return JsonSerializer.Deserialize<SessionData>(json, options);
         }
 
+        // Загрузка списка товаров из файла
         public static List<Product> LoadProducts(string path)
         {
             try
@@ -58,6 +58,7 @@ namespace petShop_courseWork.Services
             }
         }
 
+        // Загрузка списка услуг из файла
         public static List<Service> LoadServices(string path)
         {
             try
@@ -76,3 +77,4 @@ namespace petShop_courseWork.Services
         }
     }
 }
+

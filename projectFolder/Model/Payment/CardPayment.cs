@@ -11,6 +11,7 @@ namespace petShop_courseWork.Model.Payment
     {
         public string Name => "Банковская карта";
 
+        // Проверка, достаточно ли средств на карте
         public bool CanPay(decimal amount, Customer customer)
         {
             if (customer.CardBalance >= amount)

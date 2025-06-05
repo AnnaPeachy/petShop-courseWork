@@ -11,6 +11,7 @@ namespace petShop_courseWork.Model.Payment
     {
         public string Name => "Наличные";
 
+        // Проверка наличия нужной суммы в кошельке
         public bool CanPay(decimal amount, Customer customer)
         {
             if (customer.WalletBalance >= amount)

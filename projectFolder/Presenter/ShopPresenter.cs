@@ -14,20 +14,21 @@ namespace petShop_courseWork.Presenter
     {
         private readonly IShopView _view;
         private readonly Customer _customer;
-        private List<Product> _products;
-        private List<Service> _services;
+        private List<Product> _products; 
+        private List<Service> _services; 
 
         public ShopPresenter(IShopView view, Customer customer)
         {
             _view = view;
             _customer = customer;
 
-            // Загрузка данных (сначала пробуем из сессии)
+            // Инициализация данных (из сессии или файлов)
             LoadSessionData();
         }
 
         private void LoadSessionData()
         {
+            // Попытка загрузить предыдущую сессию
             var session = ProductLoader.LoadSession();
 
             if (session != null)
@@ -61,7 +62,7 @@ namespace petShop_courseWork.Presenter
             }
         }
 
-        // Добавляем метод для сохранения перед выходом
+        // Сохранение текущего состояния перед выходом
         public void SaveBeforeExit()
         {
             var session = new SessionData
@@ -76,8 +77,6 @@ namespace petShop_courseWork.Presenter
 
         public void Start()
         {
-            //_view.RequestInitialCustomer(); // Запрос данных ОДИН РАЗ
-
             bool running = true;
             while (running)
             {
@@ -94,15 +93,16 @@ namespace petShop_courseWork.Presenter
                         ShowAndSelectService();
                         break;
                     case 3:
-                        _view.ShowCart(_customer.ShoppingCart);
+                        ShowCart(); // Просмотр и управление корзиной
                         break;
                     case 4:
-                        ProcessPayment();
+                        ProcessPayment(); // Процесс оплаты
                         break;
                     case 5:
-                        HandleBalanceTopUp();
+                        HandleBalanceTopUp(); // Пополнение баланса
                         break;
                     case 0:
+                        // Обработка выхода с сохранением сессии
                         if (_view.ConfirmExit())
                         {
                             SaveBeforeExit();
@@ -149,6 +149,7 @@ namespace petShop_courseWork.Presenter
             {
                 Product selected = _products[index];
 
+                // Особая обработка для товаров, требующих взвешивания
                 if (selected.RequiresWeighing)
                 {
                     decimal weight = _view.GetProductWeight(); // Запрашиваем вес
@@ -170,6 +171,46 @@ namespace petShop_courseWork.Presenter
                 Service selected = _services[index];
                 _customer.AddToCart(new CartItem(selected));
                 _view.ShowMessage($"Услуга «{selected.Name}» добавлена в корзину.");
+            }
+        }
+
+        private void ShowCart()
+        {
+            _view.ShowCart(_customer.ShoppingCart);
+
+            // Меню для управления корзиной
+            _view.ShowMessage("\nНажмите 1, чтобы редактировать корзину");
+            _view.ShowMessage("Нажмите -1 для выхода");
+
+            int choice = _view.GetCartMenuChoice();
+
+            if (choice == 1)
+            {
+                EditCart(); // Переход в режим редактирования
+            }
+            // Для -1 просто выходим без действий
+        }
+
+        private void EditCart()
+        {
+            if (_customer.ShoppingCart.Count == 0)
+            {
+                _view.ShowMessage("Корзина пуста, нечего редактировать.");
+                return;
+            }
+
+            // Выбор товара для удаления
+            int index = _view.GetItemToRemove(_customer.ShoppingCart);
+
+            if (index >= 0 && index < _customer.ShoppingCart.Count)
+            {
+                var removedItem = _customer.ShoppingCart[index];
+                _customer.RemoveFromCart(removedItem);
+                _view.ShowMessage($"Товар '{removedItem.Item.Name}' удалён из корзины.");
+            }
+            else if (index != -1)
+            {
+                _view.ShowMessage("Неверный выбор товара.");
             }
         }
 
@@ -220,7 +261,7 @@ namespace petShop_courseWork.Presenter
                 return;
             }
 
-            // Основной процесс оплаты
+            // Основной процесс оплаты с выбором способов платежа
             decimal remaining = total;
             _view.ShowMessage($"\n=== ОПЛАТА ===\nОбщая сумма: {total} руб.");
 
@@ -250,7 +291,7 @@ namespace petShop_courseWork.Presenter
                     _view.ShowMessage($"Недостаточно средств на {strategy.Name}!");
                 }
             }
-            // успешная покупка
+            // Финализация покупки
             var command = new MakePurchaseCommand(_customer, _view);
             command.Execute();
 
@@ -301,7 +342,7 @@ namespace petShop_courseWork.Presenter
             }
         }
 
-
+        // Фабричный метод для получения стратегии оплаты
         private IPaymentStrategy GetPaymentStrategy(int method)
         {
             switch (method)

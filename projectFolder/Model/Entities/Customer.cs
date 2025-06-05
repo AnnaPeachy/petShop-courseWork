@@ -11,46 +11,31 @@ namespace petShop_courseWork.Model
     {
         public string Name { get; set; }
 
-        /// <summary>
-        /// Баланс наличных средств.
-        /// </summary>
+        // Баланс наличных средств
         public decimal WalletBalance { get; set; }
 
-        /// <summary>
-        /// Баланс на банковской карте.
-        /// </summary>
+        // Баланс на банковской карте
         public decimal CardBalance { get; set; }
 
-        /// <summary>
-        /// Баланс бонусных баллов (1 балл = 1 рубль).
-        /// </summary>
+        // Баланс бонусных баллов (1 балл = 1 рубль)
         public decimal BonusBalance { get; set; }
 
-        /// <summary>
-        /// Список товаров в корзине.
-        /// </summary>
+        // Список товаров в корзине
         public List<CartItem> ShoppingCart { get; set; } = new List<CartItem>();
 
-
-        /// <summary>
-        /// Подсчёт общей суммы корзины.
-        /// </summary>
+        // Подсчёт общей суммы корзины
         public decimal GetCartTotal()
         {
             return ShoppingCart.Sum(item => item.GetTotalPrice());
         }
 
-        /// <summary>
-        /// Добавление товара в корзину.
-        /// </summary>
+        // Добавление товара в корзину.
         public void AddToCart(CartItem item)
         {
             ShoppingCart.Add(item);
         }
 
-        /// <summary>
-        /// Удаление товара из корзины.
-        /// </summary>
+        // Удаление товара из корзины.
         public void RemoveFromCart(CartItem item)
         {
             ShoppingCart.Remove(item);

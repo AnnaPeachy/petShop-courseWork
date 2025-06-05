@@ -10,9 +10,10 @@ namespace petShop_courseWork.Model
     {
         public decimal PricePerUnit { get; set; }
         public bool RequiresWeighing { get; set; }
-        public decimal? Weight { get; set; } // null, если не взвешен
+        public decimal? Weight { get; set; } // null, если товар ещё не взвешен
         public string Category { get; set; }
 
+        // Возвращает цену товара — если товар требует взвешивания, то умножает на вес
         public override decimal GetTotalPrice()
         {
             if (RequiresWeighing)
@@ -24,6 +25,5 @@ namespace petShop_courseWork.Model
             return PricePerUnit;
         }
     }
-
-
 }
+
